@@ -6,7 +6,7 @@
 $ npm i pipeline-handler
 ```
 
-> **You can find working examples uder `test` folder**
+**You can find working examples under `test` folder**
 
 API of the `pipelineHandler` class :  
 * pipelines : your custom pipelines
