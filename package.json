@@ -1,0 +1,43 @@
+{
+  "name": "pipeline-handler",
+  "version": "1.1.1",
+  "description": "an idependant handler for pipelines (like in perfidy or epitelete)",
+  "source": "src/index.js",
+  "main": "dist/main.js",
+  "scripts": {
+    "test": "node test/test_stripAlignment.js",
+    "watch": "parcel watch",
+    "build": "rm -fr dist && parcel build --no-source-maps"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanielC-N/pipelineHandler.git"
+  },
+  "keywords": [
+    "pipeline",
+    "proskomma",
+    "epitelete",
+    "perfidy",
+    "usfm",
+    "perf"
+  ],
+  "author": "Nicolas Condomitti",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DanielC-N/pipelineHandler/issues"
+  },
+  "homepage": "https://github.com/DanielC-N/pipelineHandler#readme",
+  "devDependencies": {
+    "fs-extra": "^10.1.0",
+    "parcel": "^2.7.0",
+    "path": "^0.12.7",
+    "proskomma": "^0.8.0",
+    "tap-summary": "^4.0.0",
+    "tape": "^5.6.0"
+  },
+  "dependencies": {
+    "deep-copy-all": "^1.3.4",
+    "proskomma-json-tools": "^0.5.7",
+    "xregexp": "^5.1.1"
+  }
+}
