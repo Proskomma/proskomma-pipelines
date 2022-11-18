@@ -120,8 +120,7 @@ const localMergeAlignmentActions = {
                     }
                     return false;
                 } catch (err) {
-                    console.error(err);
-                    throw err;
+                    throw new Error(err);
                 }
             }
         },
