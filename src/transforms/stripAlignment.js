@@ -1,7 +1,6 @@
-import {PerfRenderFromJson} from 'proskomma-json-tools';
+import {PerfRenderFromJson, mergeActions} from 'proskomma-json-tools';
 import transforms from '.';
 import xre from "xregexp";
-import {mergeActions} from '../utils';
 
 const localStripMarkupActions = {
   startDocument: [

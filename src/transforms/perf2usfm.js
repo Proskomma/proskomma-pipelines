@@ -1,4 +1,4 @@
-import {PerfRenderFromJson} from 'proskomma-json-tools';
+import { PerfRenderFromJson } from 'proskomma-json-tools';
 
 const oneifyTag = t => {
     if (['toc', 'toca', 'mt', 'imt', 's', 'ms', 'mte', 'sd'].includes(t)) {
@@ -7,7 +7,8 @@ const oneifyTag = t => {
     return t;
 }
 
-const buildMilestone = (atts, type) => {
+const buildMilestone = (type, atts = {}) => {
+    if(atts == null) atts = {};
     let str=`\\${type}-s |`;
     for (let [key, value] of Object.entries(atts)) {
         if(key === "x-morph" && typeof value !== "string") {
@@ -19,7 +20,8 @@ const buildMilestone = (atts, type) => {
     return str + "\\*";
 }
 
-const buildEndWrapper = (atts, type, isnested = false) => {
+const buildEndWrapper = (type, atts = {}, isnested = false) => {
+    if(atts == null) atts = {};
     let str="|";
     for (let [key, value] of Object.entries(atts)) {
         str = str + oneifyTag(key) + "=\"" + value + "\" ";
@@ -142,7 +144,7 @@ const localToUsfmActions = {
             test: () => true,
             action: ({context, workspace}) => {
                 let contextSequenceElement = context.sequences[0].element;
-                let newStartMileStone = buildMilestone(contextSequenceElement.atts, oneifyTag(contextSequenceElement.subType.split(':')[1]));
+                let newStartMileStone = buildMilestone(oneifyTag(contextSequenceElement.subType.split(':')[1]), contextSequenceElement.atts);
                 workspace.usfmBits.push(newStartMileStone);
             }
         },
@@ -214,7 +216,7 @@ const localToUsfmActions = {
                 let subType = contextSequence.element.subType.split(':')[1];
                 let isNested = workspace.nestedWrapper > 0;
                 if(subType === "w") {
-                    let newEndW = buildEndWrapper(contextSequence.element.atts, oneifyTag(subType), isNested);
+                    let newEndW = buildEndWrapper(oneifyTag(subType), contextSequence.element.atts, isNested);
                     workspace.usfmBits.push(newEndW);
                 } else {
                     // handle nested wrappers : https://ubsicap.github.io/usfm/characters/nesting.html

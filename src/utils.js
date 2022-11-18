@@ -1,15 +1,12 @@
-const mergeActions = (actionList) => {
-    const ret = {};
-    for (const action of actionList) {
-        for (const key of Object.keys(action)) {
-            if (ret[key]) {
-                ret[key].push(... action[key]);
-            } else {
-                ret[key] = action[key];
-            }
+module.exports.saveFile = async function saveFile(file, rpath="./output.json") {
+    try {
+        if(typeof file === "string") {
+            let thepath = rpath;
+            await fse.outputFile(path.resolve(thepath), file);
+        } else {
+            await fse.outputJson(path.resolve(rpath), file);
         }
+    } catch (err) {
+        throw new Error("Failed to save the file", err);
     }
-    return ret;
 }
-
-module.exports = { mergeActions };

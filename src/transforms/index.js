@@ -6,6 +6,8 @@ import wordSearch from "./wordSearch";
 import verseWords from "./verseWords";
 import stripAlignment from "./stripAlignment";
 import mergePerfText from "./mergePerfText";
+import mergeAlignment from "./mergeAlignment";
+import justTheBible from "./justTheBible";
 
 export default {
     usfm2perf,
@@ -16,4 +18,6 @@ export default {
     verseWords,
     stripAlignment,
     mergePerfText,
+    mergeAlignment,
+    justTheBible,
 }

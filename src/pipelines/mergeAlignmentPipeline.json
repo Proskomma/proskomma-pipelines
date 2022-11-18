@@ -8,7 +8,7 @@
     }
   },
   {
-    "id": 12,
+    "id": 1,
     "title": "Count stripped perf words",
     "name": "verseWords",
     "transformName": "verseWords",
@@ -29,7 +29,7 @@
     "description": "PERF=>JSON: Counts words occurrences"
   },
   {
-    "id": 13,
+    "id": 2,
     "title": "Merge Back Into Stripped (roundtrip)",
     "name": "mergeAlignment",
     "transformName": "mergeAlignment",
@@ -48,7 +48,7 @@
       {
         "name": "verseWords",
         "type": "json",
-        "source": "Transform 12 verseWords"
+        "source": "Transform 1 verseWords"
       }
     ],
     "outputs": [
@@ -60,7 +60,7 @@
     "description": "PERF=>PERF adds report to verses"
   },
   {
-    "id": 17,
+    "id": 3,
     "title": "Merge Merged PERF Text",
     "name": "mergePerfText",
     "transformName": "mergePerfText",
@@ -69,7 +69,7 @@
       {
         "name": "perf",
         "type": "json",
-        "source": "Transform 13 perf"
+        "source": "Transform 2 perf"
       }
     ],
     "outputs": [
@@ -87,7 +87,7 @@
       {
         "name": "perf",
         "type": "json",
-        "source": "Transform 17 perf"
+        "source": "Transform 3 perf"
       }
     ]
   }
