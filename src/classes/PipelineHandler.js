@@ -24,10 +24,10 @@ class PipelineHandler {
         this.transforms = officalTransforms;
 
         if(pipelines !== null) {
-            this.pipelines.concat(pipelines);
+            Object.keys(pipelines).forEach(function(key) { this.pipelines[key] = pipelines[key]; });
         }
         if(transforms !== null) {
-            this.transforms.concat(transforms);
+            Object.keys(transforms).forEach(function(key) { this.pipelines[key] = transforms[key]; });
         }
         this.verbose = verbose;
     }
