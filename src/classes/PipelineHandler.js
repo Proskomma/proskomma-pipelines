@@ -23,15 +23,16 @@ class PipelineHandler {
         this.pipelines = officalPipelines;
         this.transforms = officalTransforms;
 
+        console.log("PIPELINES : ", this.pipelines);
         if(pipelines != null) {
-            Object.keys(pipelines).forEach(function(key) {
+            for(let key in Object.keys(pipelines)) {
                 this.pipelines[key] = pipelines[key];
-            });
+            }
         }
         if(transforms != null) {
-            Object.keys(transforms).forEach(function(key) {
-                this.pipelines[key] = transforms[key];
-            });
+            for(let key in Object.keys(transforms)) {
+                this.transforms[key] = transforms[key];
+            }
         }
         this.verbose = verbose;
     }
