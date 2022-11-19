@@ -23,7 +23,6 @@ class PipelineHandler {
         this.pipelines = officalPipelines;
         this.transforms = officalTransforms;
 
-        console.log("PIPELINES : ", this.pipelines);
         if(pipelines != null) {
             for(let key in Object.keys(pipelines)) {
                 this.pipelines[key] = pipelines[key];
