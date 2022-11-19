@@ -44,6 +44,10 @@ class PipelineHandler {
         this.proskomma = proskomma;
     }
 
+    listPipelinesNames() {
+        console.log(Object.keys(this.pipelines).join("\n"));
+    }
+
     /**
      * Gets pipeline by given name
      * @param {string} pipelineName - the pipeline name
