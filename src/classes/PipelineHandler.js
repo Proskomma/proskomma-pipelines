@@ -23,11 +23,15 @@ class PipelineHandler {
         this.pipelines = officalPipelines;
         this.transforms = officalTransforms;
 
-        if(pipelines !== null) {
-            Object.keys(pipelines).forEach(function(key) { this.pipelines[key] = pipelines[key]; });
+        if(pipelines != null) {
+            Object.keys(pipelines).forEach(function(key) {
+                this.pipelines[key] = pipelines[key];
+            });
         }
-        if(transforms !== null) {
-            Object.keys(transforms).forEach(function(key) { this.pipelines[key] = transforms[key]; });
+        if(transforms != null) {
+            Object.keys(transforms).forEach(function(key) {
+                this.pipelines[key] = transforms[key];
+            });
         }
         this.verbose = verbose;
     }
