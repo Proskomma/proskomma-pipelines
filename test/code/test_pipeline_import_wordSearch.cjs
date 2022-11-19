@@ -16,29 +16,29 @@ const pipelineH = new PipelineHandler({
     verbose:false
 });
 
-const validator = new Validator();
+const perfContent = fse.readJsonSync(path.resolve(__dirname, "../data/usfms/titus_aligned_eng.json"));
 
-const usfmContent = fse.readFileSync(path.resolve(__dirname, "../data/usfms/titus.usfm")).toString();
-
-test(`returns output with valid args (${testGroup})`, async (t) => {
+test(`returns output with valid args (${testGroup})`, (t) => {
     t.plan(1);
     try {
-        let output = await pipelineH.runPipeline("wordSearch", {
-            usfm: usfmContent,
-            selectors: {"lang": "fra", "abbr": "ust"}
-        });
+        t.doesNotThrow(async () => {
+            let output = await pipelineH.runPipeline("wordSearchPipeline", {
+                perf: perfContent,
+                searchString: "Zacharias",
+                "ignoreCase": "1",
+                "asRegex": "0",
+                "logic": "A",
+                "asPartial": "0"
+            });
 
-        const validatorResult = validator.validate('constraint','perfDocument','0.2.1', output.perf);
-        if (!validatorResult.isValid) {
-            t.fail("usfm=>perf throws on valid usfm");
-            throw `usfm=>perf, PERF file is not valid. \n${JSON.stringify(validatorResult,null,2)}`;
-        } else {
-            t.ok(validatorResult.isValid);
-        }
-
-        // await saveFile(JSON.stringify(output.perf, null, 2));
+            t.ok('matches' in output);
+            t.ok('searchTerms' in output.matches);
+            t.equal(output.matches.matches[0].chapter, '1');
+            t.equal(output.matches.matches[0].verses, '5');
+            // await saveFile(output.usfm);
+        })
     } catch (err) {
         console.log(err);
-        t.fail("usfm2perfPipeline throws on valid perf");
+        t.fail("perf2usfmPipeline throws on valid perf");
     }
 });
