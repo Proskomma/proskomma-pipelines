@@ -8,7 +8,7 @@ const testGroup = "strip and merge";
 
 const pipelineH = new PipelineHandler({ proskomma: new Proskomma() , verbose: false });
 
-const perfContent = fse.readFileSync(path.resolve(__dirname, "../data/usfms/titus_aligned_eng.json")).toString();
+const perfContent = fse.readFileSync(path.resolve(__dirname, "../data/perfs/titus_aligned_eng.json")).toString();
 
 
 let reportStrip = null;

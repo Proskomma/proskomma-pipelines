@@ -8,7 +8,7 @@ const testGroup = "Perf 2 usfm";
 
 const pipelineH = new PipelineHandler({proskomma:new Proskomma(), verbose:false});
 
-const perfContent = fse.readJsonSync(path.resolve(__dirname, "../data/usfms/titus_aligned_eng.json"));
+const perfContent = fse.readJsonSync(path.resolve(__dirname, "../data/perfs/titus_aligned_eng.json"));
 
 test(`perf=>usfm (${testGroup})`, (t) => {
     t.plan(1);

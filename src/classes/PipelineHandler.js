@@ -24,12 +24,13 @@ class PipelineHandler {
         this.transforms = officalTransforms;
 
         if(pipelines != null) {
-            for(let key in Object.keys(pipelines)) {
+            for(let key of Object.keys(pipelines)) {
                 this.pipelines[key] = pipelines[key];
             }
         }
+
         if(transforms != null) {
-            for(let key in Object.keys(transforms)) {
+            for(let key of Object.keys(transforms)) {
                 this.transforms[key] = transforms[key];
             }
         }

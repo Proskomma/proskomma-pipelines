@@ -9,7 +9,7 @@ const testGroup = "Just the bible";
 
 const pipelineH = new PipelineHandler({proskomma:new Proskomma(), verbose:false});
 
-const perfContent = fse.readJsonSync(path.resolve(__dirname, "../data/usfms/titus_aligned_eng.json"));
+const perfContent = fse.readJsonSync(path.resolve(__dirname, "../data/perfs/titus_aligned_eng.json"));
 
 const validator = new Validator();
 
