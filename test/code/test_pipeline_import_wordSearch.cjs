@@ -1,11 +1,13 @@
-const { PipelineHandler, pipelines, transforms} = require("../../dist/main");
+const { PipelineHandler } = require("../../dist/main");
 const { Validator } = require("proskomma-json-tools");
 const test = require("tape");
 const { Proskomma } = require("proskomma");
 const fse = require("fs-extra");
 const path = require("path");
+const pipelines = require("../data/pipelines");
+const transforms = require("../data/transforms");
 
-const testGroup = 'import pipelines';
+const testGroup = 'wordSearch';
 
 const pipelineH = new PipelineHandler({
     pipelines: pipelines,
@@ -18,10 +20,10 @@ const validator = new Validator();
 
 const usfmContent = fse.readFileSync(path.resolve(__dirname, "../data/usfms/titus.usfm")).toString();
 
-test(`usfm=>perf : validate the output perf (${testGroup})`, async (t) => {
+test(`returns output with valid args (${testGroup})`, async (t) => {
     t.plan(1);
     try {
-        let output = await pipelineH.runPipeline("usfm2perfPipeline", {
+        let output = await pipelineH.runPipeline("wordSearch", {
             usfm: usfmContent,
             selectors: {"lang": "fra", "abbr": "ust"}
         });
