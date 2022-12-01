@@ -1,8 +1,8 @@
 import {
     PerfRenderFromJson,
-    transforms,
     mergeActions,
 } from "proskomma-json-tools";
+import transforms from '.';
 import xre from "xregexp";
 
 const lexingRegexes = [
@@ -59,11 +59,18 @@ const localMergeAlignmentActions = {
                     };
 
                     const addWrappers = ({ subtype, content = [], atts = {} }) => {
+                        if(Object.keys(atts).length > 0) {
+                            return {
+                                type: "wrapper",
+                                subtype,
+                                content,
+                                atts,
+                            };
+                        }
                         return {
                             type: "wrapper",
                             subtype,
                             content,
-                            atts,
                         };
                     };
 
@@ -179,7 +186,7 @@ const mergeAlignmentCode = function ({
         srcJson: perf,
         actions: mergeActions([
             localMergeAlignmentActions,
-            transforms.perf2perf.identityActions,
+            transforms.identityActions,
         ]),
     });
     const output = {};
