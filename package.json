@@ -1,6 +1,6 @@
 {
   "name": "pipeline-handler",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "an idependant handler for pipelines (like in perfidy or epitelete)",
   "source": "src/index.js",
   "main": "dist/main.js",
