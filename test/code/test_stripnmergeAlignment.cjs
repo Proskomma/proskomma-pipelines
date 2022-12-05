@@ -3,20 +3,38 @@ const { Proskomma } = require("proskomma");
 const fse = require("fs-extra");
 const path = require("path");
 const test = require("tape");
+const {Validator} = require("proskomma-json-tools");
 
 const testGroup = "strip and merge";
 
-const pipelineH = new PipelineHandler({ proskomma: new Proskomma(), verbose: false });
 
-const perfContent = fse.readFileSync(path.resolve(__dirname, "../data/perfs/titus_aligned_eng.json")).toString();
+const perfContent = fse.readFileSync(path.resolve(__dirname, "../data/perfs/MARK_titus_aligned_eng.json")).toString();
 
+const proskomma = new Proskomma([
+    {
+        name: "org",
+        type: "string",
+        regex: "^[^\\s]+$"
+    },
+    {
+        name: "lang",
+        type: "string",
+        regex: "^[^\\s]+$"
+    },
+    {
+        name: "abbr",
+        type: "string",
+        regex: "^[A-za-z0-9_-]+$"
+    }
+]);
+const pipelineH = new PipelineHandler({ proskomma: proskomma, verbose: false });
 
 let reportStrip = null;
 let outputStrip = null;
 let output = null;
 
 test(`strip alignment (${testGroup})`, async (t) => {
-    t.plan(2);
+    t.plan(3);
     try {
         output = await pipelineH.runPipeline("stripAlignmentPipeline", {
             perf: JSON.parse(perfContent),
@@ -24,6 +42,14 @@ test(`strip alignment (${testGroup})`, async (t) => {
         // console.log(JSON.stringify(output.perf, "  ", 4));
         outputStrip = output.perf;
         reportStrip = output.strippedAlignment;
+        const validator = new Validator();
+        let validation = validator.validate(
+            'constraint',
+            'perfDocument',
+            '0.3.0',
+            outputStrip
+        );
+        t.equal(validation.errors, null);
         t.ok(outputStrip, "perf alignment stripped");
         t.ok(reportStrip, "perf report alignement");
         // await saveFile(JSON.stringify(output.perf, null, 2), "test/outputs/STRIP_perf_titus_stripped_eng.json");
@@ -35,7 +61,7 @@ test(`strip alignment (${testGroup})`, async (t) => {
 });
 
 test(`merge alignment (${testGroup})`, async (t) => {
-    t.plan(2);
+    t.plan(3);
     try {
         output = await pipelineH.runPipeline("mergeAlignmentPipeline", {
             perf: outputStrip,
@@ -44,6 +70,14 @@ test(`merge alignment (${testGroup})`, async (t) => {
         t.ok(output, "perf alignment stripped");
         // console.log(JSON.stringify(perfContent, " ", 4));
         t.same(output.perf, JSON.parse(perfContent));
+        const validator = new Validator();
+        let validation = validator.validate(
+            'constraint',
+            'perfDocument',
+            '0.3.0',
+            output.perf
+        );
+        t.equal(validation.errors, null);
         // await saveFile(JSON.stringify(output.perf, null, 2), "test/outputs/STRIP_perf_titus_merged_align_eng.json");
     } catch (err) {
         console.log(err);

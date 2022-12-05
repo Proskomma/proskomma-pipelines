@@ -7,7 +7,7 @@ const localStripMarkupActions = {
         {
             description: "Set up",
             test: () => true,
-            action: ({ workspace, output }) => {
+            action: ({ workspace, output, context }) => {
                 workspace.chapter = null;
                 workspace.verses = null;
                 workspace.lastWord = "";
