@@ -7,7 +7,7 @@ const localStripMarkupActions = {
         {
             description: "Set up",
             test: () => true,
-            action: ({ workspace, output, context }) => {
+            action: ({ workspace, output }) => {
                 workspace.chapter = null;
                 workspace.verses = null;
                 workspace.lastWord = "";
@@ -15,6 +15,7 @@ const localStripMarkupActions = {
                 workspace.currentOccurrences = {};
                 workspace.PendingStartMilestones = [];
                 output.stripped = {};
+                output.unalignedWords = {};
                 return true;
             },
         },
@@ -30,7 +31,6 @@ const localStripMarkupActions = {
                 delete payload.subType;
                 workspace.waitingMarkup.push(payload);
                 workspace.PendingStartMilestones.push(payload);
-
             },
         },
     ],
@@ -68,7 +68,6 @@ const localStripMarkupActions = {
                         record,
                     ];
                 } else {
-
                     output.stripped[workspace.chapter][workspace.verses][
                         strippedKey
                     ].push(record);
@@ -104,6 +103,7 @@ const localStripMarkupActions = {
             action: ({ context, workspace, output, config }) => {
                 try {
                     const text = context.sequences[0].element.text;
+                    // console.log({ text });
                     const re = xre("([\\p{Letter}\\p{Number}\\p{Mark}\\u2060]{1,127})");
                     const words = xre.match(text, re, "all");
                     const { chapter, verses } = workspace;
@@ -111,6 +111,18 @@ const localStripMarkupActions = {
                     for (const word of words) {
                         workspace.currentOccurrences[word] ??= 0;
                         workspace.currentOccurrences[word]++;
+                        if (
+                            !workspace.PendingStartMilestones.length &&
+                            workspace.waitingMarkup.length
+                        ) {
+                            output.unalignedWords[chapter] ??= {};
+                            output.unalignedWords[chapter][verses] ??= [];
+                            output.unalignedWords[chapter][verses].push({
+                                word,
+                                occurrence: workspace.currentOccurrences[word],
+                                totalOccurrences: totalOccurrences[chapter][verses][word],
+                            });
+                        }
                         while (workspace.waitingMarkup.length) {
                             const payload = workspace.waitingMarkup.shift();
                             const strippedKey = [
@@ -148,7 +160,8 @@ const localStripMarkupActions = {
                         workspace.lastWord = word;
                     }
                 } catch (err) {
-                    throw new Error(err);
+                    console.error(err);
+                    throw err;
                 }
                 return true;
             },
@@ -175,7 +188,7 @@ const localStripMarkupActions = {
                         output.stripped[workspace.chapter][workspace.verses] = {};
                     }
                 } catch (err) {
-                    throw new Error(err);
+                    console.error(err);
                     throw err;
                 }
                 return true;
@@ -198,23 +211,27 @@ const stripMarkupCode = function ({ perf, verseWords }) {
     );
     const output = {};
     cl.renderDocument({ docId: "", config: { verseWords }, output });
-    return { perf: output.perf, strippedAlignment: output.stripped };
-}
+    return {
+        perf: output.perf,
+        strippedAlignment: output.stripped,
+        unalignedWords: output.unalignedWords,
+    };
+};
 
-const stripAlignment = {
-    name: "stripAlignment",
+const stripMarkup = {
+    name: "stripMarkup",
     type: "Transform",
     description: "PERF=>PERF: Strips alignment markup",
     inputs: [
         {
             name: "perf",
             type: "json",
-            source: ""
+            source: "",
         },
         {
             name: "verseWords",
             type: "json",
-            source: ""
+            source: "",
         },
     ],
     outputs: [
@@ -225,8 +242,12 @@ const stripAlignment = {
         {
             name: "strippedAlignment",
             type: "json",
-        }
+        },
+        {
+            name: "unalignedWords",
+            type: "json",
+        },
     ],
-    code: stripMarkupCode
-}
-export default stripAlignment;
+    code: stripMarkupCode,
+};
+export default stripMarkup;

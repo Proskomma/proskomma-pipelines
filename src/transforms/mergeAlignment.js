@@ -33,10 +33,11 @@ const localMergeAlignmentActions = {
         {
             description: "setup",
             test: () => true,
-            action: ({ workspace }) => {
+            action: ({ workspace, output }) => {
                 workspace.chapter = null;
                 workspace.verses = null;
                 workspace.currentOccurrences = {};
+                output.unalignedWords = {};
                 return true;
             },
         },
@@ -133,15 +134,24 @@ const localMergeAlignmentActions = {
 
                         //TODO: Add as many endMilestones as there are opened in alignments.opened, and set the later to 0.
                         if (!beforeWord?.length) {
-                            console.log(`pushing unaligned WORD: ${word}`);
+                            // console.log(`pushing unaligned WORD: ${word}`);
                             if (alignments.opened) {
                                 workspace.outputContentStack[0].push(endMilestone);
                                 alignments.opened = false;
                             }
                             pushOnHoldChars();
-                            workspace.outputContentStack[0].push(
-                                addWrappers({ subtype: "usfm:w", content: [word] })
-                            );
+                            output.unalignedWords[chapter] ??= {};
+                            output.unalignedWords[chapter][verses] ??= [];
+                            output.unalignedWords[workspace.chapter][workspace.verses].push({
+                                word,
+                                occurrence: workspace.currentOccurrences[word],
+                                totalOccurrences: totalOccurrences[chapter][verses][word],
+                            });
+                            const wrappedWord = addWrappers({
+                                subtype: "usfm:w",
+                                content: [word],
+                            });
+                            workspace.outputContentStack[0].push(wrappedWord);
                         }
                     }
                     pushOnHoldChars();
@@ -198,7 +208,7 @@ const mergeAlignmentCode = function ({
         },
         output,
     });
-    return { perf: output.perf }; // identityActions currently put PERF directly in output
+    return { perf: output.perf, unalignedWords: output.unalignedWords }; // identityActions currently put PERF directly in output
 };
 
 const mergeAlignment = {
@@ -225,6 +235,10 @@ const mergeAlignment = {
     outputs: [
         {
             name: "perf",
+            type: "json",
+        },
+        {
+            name: "unalignedWords",
             type: "json",
         },
     ],
