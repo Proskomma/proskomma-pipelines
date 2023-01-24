@@ -102,7 +102,9 @@ const localStripMarkupActions = {
             test: () => true,
             action: ({ context, workspace, output, config }) => {
                 try {
-                    const text = context.sequences[0].element.text;
+                    const sequence = context.sequences[0];
+                    if (sequence.type !== 'main') return true;
+                    const text = sequence.element.text;
                     // console.log({ text });
                     const re = xre("([\\p{Letter}\\p{Number}\\p{Mark}\\u2060]{1,127})");
                     const words = xre.match(text, re, "all");

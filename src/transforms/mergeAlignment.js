@@ -28,6 +28,25 @@ const endMilestone = {
     subtype: "usfm:zaln",
 };
 
+const ignoreGraftsActions = {
+    blockGraft: [
+        {
+            description: "Ignore blockGraft events",
+            test: () => true,
+            action: () => {
+            }
+        },
+    ],
+    inlineGraft: [
+        {
+            description: "Ignore inlineGraft events",
+            test: () => true,
+            action: () => {
+            }
+        },
+    ],
+}
+
 const localMergeAlignmentActions = {
     startDocument: [
         {
@@ -48,6 +67,9 @@ const localMergeAlignmentActions = {
             test: () => true,
             action: ({ config, context, workspace, output }) => {
                 try {
+                    const sequence = context.sequences[0];
+                    if (sequence.type !== 'main') return true;
+                    
                     const text = context.sequences[0].element.text;
                     const words = xre.match(text, re, "all");
                     const { chapter, verses } = workspace;
@@ -195,6 +217,7 @@ const mergeAlignmentCode = function ({
     const cl = new PerfRenderFromJson({
         srcJson: perf,
         actions: mergeActions([
+            // ignoreGraftsActions,
             localMergeAlignmentActions,
             transforms.identityActions,
         ]),
