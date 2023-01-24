@@ -4,6 +4,7 @@ const fse = require("fs-extra");
 const path = require("path");
 const test = require("tape");
 const {Validator} = require("proskomma-json-tools");
+const jsonDiff = require('json-diff')
 
 const testGroup = "strip and merge";
 
@@ -69,6 +70,7 @@ test(`merge alignment (${testGroup})`, async (t) => {
         });
         t.ok(output, "perf alignment stripped");
         // console.log(JSON.stringify(perfContent, " ", 4));
+        // console.log(jsonDiff.diffString({foo: "bar"}, {}));
         t.same(output.perf, JSON.parse(perfContent));
         const validator = new Validator();
         let validation = validator.validate(
@@ -83,4 +85,50 @@ test(`merge alignment (${testGroup})`, async (t) => {
         console.log(err);
         t.fail("mergeAlignmentPipeline throws on valid perf");
     }
+});
+
+
+//TESTING GRAFT ERRORS:
+
+const usfmContent = fse.readFileSync(path.resolve(__dirname, "../data/usfms/dcs-en-rut.usfm")).toString();
+
+test(`Does not add wrappers to footnotes (${testGroup})`, async (t) => {
+    try {
+        let {perf} = await pipelineH.runPipeline("usfm2perfPipeline", {
+            usfm: usfmContent,
+            selectors: {org: "dcs", "lang": "en", "abbr": "ult"}
+        });
+        const validator = new Validator();
+        const validatorResult = validator.validate('constraint','perfDocument','0.2.1', perf);
+        if (!validatorResult.isValid) {
+            t.fail("usfm=>perf throws on valid usfm");
+            throw `usfm=>perf, PERF file is not valid. \n${JSON.stringify(validatorResult,null,2)}`;
+        } else {
+            t.ok(validatorResult.isValid);
+        }
+
+        // console.log(output.perf);
+        const getFootnotes = (sequences) =>
+            Object.keys(sequences).filter(id => sequences[id].type === 'footnote').map(id => sequences[id]);
+        const showJson = (json) => JSON.stringify(json, null, 4);
+
+        const footnotes = getFootnotes(perf.sequences);
+        // console.log(showJson(footnotes[0]));
+
+        const {perf: strippedPerf,strippedAlignment} = await pipelineH.runPipeline("stripAlignmentPipeline", {
+            perf
+         });
+        // console.log(showJson(getFootnotes(strippedPerf.sequences)[0]));
+
+        const {perf: mergedPerf} = await pipelineH.runPipeline("mergeAlignmentPipeline", {
+            perf: strippedPerf,
+            strippedAlignment,
+        });
+
+        // await saveFile(JSON.stringify(output.perf, null, 2));
+    } catch (err) {
+        console.log(err);
+        t.fail("usfm2perfPipeline throws on valid perf");
+    }
+    t.end()
 });
