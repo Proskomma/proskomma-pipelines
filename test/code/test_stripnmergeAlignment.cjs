@@ -94,6 +94,7 @@ const usfmContent = fse.readFileSync(path.resolve(__dirname, "../data/usfms/dcs-
 
 test(`Does not add wrappers to footnotes (${testGroup})`, async (t) => {
     try {
+        t.plan(3);
         let {perf} = await pipelineH.runPipeline("usfm2perfPipeline", {
             usfm: usfmContent,
             selectors: {org: "dcs", "lang": "en", "abbr": "ult"}
@@ -106,26 +107,20 @@ test(`Does not add wrappers to footnotes (${testGroup})`, async (t) => {
         } else {
             t.ok(validatorResult.isValid);
         }
-
-        // console.log(output.perf);
         const getFootnotes = (sequences) =>
             Object.keys(sequences).filter(id => sequences[id].type === 'footnote').map(id => sequences[id]);
-        const showJson = (json) => JSON.stringify(json, null, 4);
 
         const footnotes = getFootnotes(perf.sequences);
-        // console.log(showJson(footnotes[0]));
 
         const {perf: strippedPerf,strippedAlignment} = await pipelineH.runPipeline("stripAlignmentPipeline", {
             perf
-         });
-        // console.log(showJson(getFootnotes(strippedPerf.sequences)[0]));
-
+        });
+        t.same(footnotes,getFootnotes(strippedPerf.sequences))
         const {perf: mergedPerf} = await pipelineH.runPipeline("mergeAlignmentPipeline", {
             perf: strippedPerf,
             strippedAlignment,
         });
-
-        // await saveFile(JSON.stringify(output.perf, null, 2));
+        t.same(footnotes,getFootnotes(mergedPerf.sequences))
     } catch (err) {
         console.log(err);
         t.fail("usfm2perfPipeline throws on valid perf");
